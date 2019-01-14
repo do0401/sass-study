@@ -1,0 +1,11 @@
+{
+  "name": "study-sass",
+  "version": "1.0.0",
+  "description": "CSS 수퍼파워 Sass로 디자인하라 ========================= 이 글은 [CSS 수퍼파워 Sass로 디자인하라](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&barcode=9788997924233) 책을 토대로 공부한 내용을 정리한 글입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nmwh",
+  "license": "ISC"
+}
