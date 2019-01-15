@@ -201,6 +201,298 @@ article[role="complimentary"] {
 - 웹 사이트의 width가 유동적으로 변경되는 경우, 콘텐츠가 드어가는 부분과 사이드 바의 크기 또한 유동적으로 변경해 줄 필요가 있다.
 - 이 경우 연산 기능을 이용하면, 해당 콘텐츠의 크기를 쉽게 처리할 수 있다.
 
+## `2일차`
 ### 2장. Sass 레퍼런스
 #### 2.1 개요
-- 
+- [Sass 레퍼런스 URL](http://sass-lang.com/documentation/file.SASS_REFERENCE.html)
+
+#### 2.2 CSS 확장(CSS Extensions)
+- css 확장에는 위에서 알아봤던 중첩뿐만 아니라 태그 선택자와 연계된 클래스 또는 아이디 선택자끼리 쉽게 묶어주는 기능도 있다.
+- & 기호를 이용해서 처리하며, 수도선택자를 지정할 때도 사용된다.
+- 또한 css 확장에는 css 속성 중 동일한 단어가 들어가 있는 속성들, 예를 들어, font-family, font-weight 와 같은 속성들도 중첩을 이용하여 쉽게 처리할 수 있다.
+
+```scss
+@import url(http://fonts/googleapis.com/earlyaccess/nunumgothic.css);
+$bgcolor: #007bfff;     // 색상을 변수로 지정하여 직관적으로 작업을 처리할 수 있다.
+$white: #fff;
+$black: #000;
+
+article {
+    $.section1 {        // 중첩을 이용하면 이렇게 태그 선택자와 결합된 클래스 또는 아이디 선택자가 있을 경우, & 기호로 간단히 처리할 수 있다.
+        width: 800px;
+        margin: 10px auto;
+        font: {         // 선택자의 이름과 더불어 별도의 속성이 들어가는 부분을 중첩을 통해 간편하게 처리할 수 있다.
+            size: 14px;
+            family: 'Nanum Gothic', sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 50px;
+            th,td {
+                padding: 12px 8px;
+                text-align: center;
+                border: 1px solid rgba($black, 0.4);    // 색상이 변수로 지정되어 있다면, 변수값을 넣고 투명도를 지정하게 되면,
+            }                                           // 최종 css 파일에는 rgba(0, 0, 0, 0.4); 로 변환된다.
+            th {
+                background-color: rgba($bgcolor, 0.8);
+                color: $white;
+                border: {       // 선택자의 이름과 더불어 별도의 속성이 들어가는 부분을 중첩을 통해 간편하게 처리할 수 있다.
+                    top: 2px solid $black;
+                    bottom: 2px solid $black;
+                }
+            }
+            td {
+                $:nth-child(2) {        // 수도선택자(psuedo selector)를 & 기호로 간단히 처리할 수 있다.
+                    text-align: left;
+                    padding-left: 15px;
+                }
+            }
+            tr {
+                $:hover {               // 수도선택자(psuedo selector)를 & 기호로 간단히 처리할 수 있다.
+                    background-color: rgba($bgcolor, 0.6);
+                    color: $white;
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+}
+```
+- 참고로 & 를 뒷 부분에 붙일 수도 있다.
+
+```scss
+.select1 {
+    padding: 30px;
+    .another & {        // '.another .select1 {' 과 동일하다.
+        margin: 20px;
+    }
+}
+```
+- 즉, Sass에서 & 는 부모 선택자를 의미하며, 부모 선택자와 해당 선택자를 묶는 역할 또는 부모 선택자를 다른 선택자의 하위 선택자로 처리할 수 있다는 것을 의미한다.
+
+#### 2.3 주석 처리
+```scss
+/* 주석 내용 */
+이 방식은 Sass 컴파일 결과물인 css 파일에도 그대로 반영된다.
+css 파일에 저작권 또는 css 파일 버전 등을 표시할 때 사용한다.
+
+// 주석 내용
+이 방식은 css 파일에 전혀 반영되지 않는다.
+Sass의 속성을 지정하여 유지보수 할 때 편리하다.
+```
+- **단, Sass 에서 한글로 주석을 달면 컴파일 시 에러가 발생하니 주의해야 한다.**
+
+#### 2.4 SassScript
+`sass -i`
+- 인터렉티브 쉘(Interactive Shell) 상태에서 SassScript를 실행하겠다는 의미다.
+- 사칙연산이 가능하며, 색상 코드를 더할 수도 있다.
+
+#### 2.5 변수: $ 기호를 사용
+- Sass 에서는 전역(global) 변수와 지역(local) 변수가 존재한다.
+- 전역변수는 선택자 외부에 별도로 선언을 하거나, 지역변수 부분에 !global이라고 지정하면 전역변수가 된다.
+
+```scss
+$main-width: 100%;                  // 전역변수
+#main {
+    $width: 10px !global;           // 전역변수
+    border: $width solid red;       // 전역변수 $width 사용
+    $main_color: #fff;
+    background-color: $main-color;
+    width: $main-width;
+}
+#sidebar {
+    width: $width*50;               // 전역변수 $width 사용
+}
+#content {
+    $width: 500px;
+    width: $width;                  // 지역변수 $width 사용
+}
+#sidebar2 {
+    width: ($main_width/10);        // Sass 에서는 하이픈(-)과 언더바(_)를 동일한 기호로 인식한다.
+}
+```
+- 많은 Sass 개발자들은 보통 _variables.scss 라는 별도의 파일로 만들어서 전역변수를 분리한다.
+
+#### 2.6 데이터 타입
+- SassScript는 다음과 같은 7가지의 데이터 타입을 지원한다.
+
+```
+1. 숫자 - numbers (예: 1.2, 13, 10px)
+2. 문자열(따옴표 포함한) - strings of text, with and without quotes (예: "foo", 'bar', baz)
+3. 색상값 - colors (예: blue, #04a3f9, rgba(255,0,0,0.5))
+4. 불린함수 - booleans (예: true, false)
+5. 널값 - nulls (예: null)
+6. 수치값(폰트명) - lists of values, separated by spaces or commas (예: 1.5em 1em 0 2em, Helvetica, Arial, sans-serif)
+7. 맵스 - maps from one values to another (예: value1, key2,: value2)
+```
+- 모든 종류의 css 속성 값들을 지원하고, !important 선언도 지원한다.
+
+*문자열*
+- SassScript 에서는 일반 텍스트, 따옴표, 쌍따옴표 모두 동일하게 취급한다.
+- font-family를 지정하는 경우 폰트 이름이 2개의 단어로 구성된 경우, 쌍따옴표 또는 따옴표를 사용한다.
+- URL을 표시하는 경우, 쌍따옴표 또는 따옴표를 사용한다.
+- 인용(interpolation)을 적용하는 경우에는 선택자 부분에 반드시 (쌍)따옴표를 사용해야 한다.
+
+*리스트*
+- 리스트는 배열을 의미하며, 변수에도 배열을 사용할 수 있다.
+- 단, 배열 중간에 null 값을 넣을 수 없다. (버본이라는 Sass 프레임워크에서는 가능하지만, 이는 극히 예외적인 상황이다.)
+
+*맵스(Maps)*
+- 맵스는 다음과 같이 키와 그 키 값에 대한 배열을 지정하는 것이다.
+
+```scss
+$map: (key1: value1, key2: value2, key3: value3);
+```
+
+*색상*
+- css 에서 사용되는 어떠한 색상 코드도 Sass에서 사용이 가능하다.
+- 특히 색상을 16진수로 표현한 후 Sass 본문에서 rgba 코드 값을 사용하면 매우 편리하다.
+
+#### 2.7 연산(Operations)
+*숫자 연산(Number Operations)*
+- 연산에서는 사칙연산 기호를 모두 사용할 수 있다.
+- 단, font 속성에서 "/" 기호는 아래와 같은 의미로도 사용된다.
+
+```scss
+font: 10px/8px;     // 여기서 "/" 기호는 font-size와 line-height 값을 구분하는 의미로 사용된다.
+
+font-size: 10px;
+line-height: 8px;
+```
+
+*색상 연산(Color Operations)
+```scss
+a {
+    color: rgba(255, 0, 0, 0.75) + rgba(0, 255, 0, 0.75);
+}
+
+// 결과는
+a {
+    color: rgba(255, 255, 0, 0.75);
+}
+```
+- rgba 또는 hsla로 구성된 색상의 경우, 연산을 위해서는 반드시 동일한 알파값을 넣어줘야 한다.
+- Sass 에서 알파값은 opacity와 transparentize 속성으로 조절 가능하다.
+
+```scss
+$red50: rgba(255, 0, 0, 0.5);
+
+div {
+    color: opacity($red50, 0.3);
+    background-color: transparentize($red50, 0.25);
+}
+
+// 결과는
+div {
+    color: rgba(255, 0, 0, 0.8);                // 알파값이 0.3 증가(opacity 속성 효과)
+    background-color: rgba(255, 0, 0, 0.25);    // 알파값이 0.25 감소(transparentize 속성 효과)
+}
+```
+
+*문자열 연산(String Operations)*
+- 문자열 연산은 두 개의 문자열을 결합하는 것을 의미한다.
+
+```scss
+p:before {
+    content: "Foo" + Bar;
+    font-family: sans- + "serif";
+}
+
+// 결과는
+p:before {
+    content: "Foo Bar";
+    font-family: sans-serif;
+}
+```
+
+*삽입(Interpolation)*
+- #{} 구문을 사용하여 선택자와 속성 이름에 변수를 제공한다.
+
+```scss
+$name: foo;
+$attr: border;
+
+p.#{$name} {
+    #{$attr}-color: blue;
+}
+
+// 결과는
+p.foo {
+    border-color: blue;
+}
+```
+
+*변수 기본값 설정(Variable Defaults: !default)*
+- 변수에 default 값을 지정하려는 경우, 해당 변수 옆에 !default 라고 적어주면 된다.
+- !default 의 정확한 의미는, 해당 변수의 다른 값이 이미 있다면 무시하고, 값이 없다면 해당 변수 값을 할당하라는 의미다.
+
+```scss
+$content: "First content";
+$content: "Second content?" !default;
+$new_content: "First time refernce" !default;
+
+#main {
+    content: $content;
+    new-content: $new_content;
+}
+
+$content1: "First content";
+$content1: "Second content?";
+$new_content2: "First time reference" !default;
+$new_content2: "Second time reference";
+
+#main {
+    content: $content1;
+    new-content2: $new_content2;
+}
+
+// 결과는
+#main {
+    content: "First content";               // default 값 외에 다른 값이 이미 존재하므로 다른 값이 default 값은 무시된다.
+    new-content: "First time refernce";     // default 값 외에 다른 값이 없으므로 default 값이 사용된다.
+}
+
+#main {
+    content: "Second content?";             // default 값을 선언하지 않았으므로 마지막에 선언한 값이 사용된다.
+    new-content: "Second time reference";   // default 값 외에 다른 값이 이미 존재하므로 다른 값이 default 값은 무시된다.
+}
+```
+- 일반적으로 !default 는 사용할 일이 거의 없으나, 부트스트랩과 같은 라이브러리 Sass를 작성하는 경우라면 거의 필수적으로 사용하게 된다.
+- 부트스트랩은 아주 많은 변수를 가지고 있으며, _variable.scss에 정의한 모든 변수는 !default 플래그를 가지고 있다.
+- 이렇게 변수를 모두 기본값으로 작성해 놓으면, 이 라이브러리를 가져와 사용하는 사람은 원본을 망가트리지 않으면서 쉽게 **변수 값을 사용자화** 할 수 있다.
+
+#### 2.8 @ 규칙과 지시어(@-Rules and Directives)
+- Sass 에서는 css3에서 사용되는 모든 @ 규칙을 사용할 수 있다.
+
+*@import(불러오기)*
+
+`@import "color";`
+- Sass 파일에서는 확장자를 명시하지 않아도 된다.
+- import되는 파일의 경우, 파일명 제일 앞에 '_'(언더바)를 적용해야 별도의 css 파일로 컴파일되지 않는다.
+- @import 는 파일 전체를 불러오는 방법도 있지만, 중첩을 이용해서 해당 선택자 부분에만 특정 속성을 불러오는 방법도 있다.
+
+```scss
+// import 될 파일의 속성
+.box1 {
+    margin: 0;
+    padding: 0;
+}
+
+// import 하는 파일
+.boxmodel {
+    @import "box1";
+    font-size: 12px;
+}
+
+// 결과는
+.boxmedel {
+    font-size: 12px;
+}
+.boxmodel .box1 {
+    margin: 0;
+    padding: 0;
+}
+```
+- 위와 같이 사용하는 경우, 중첩 구문에만 사용 가능하며, @mixin이나 if 구문에서는 사용할 수 없다.
+- 하지만 @import는 외부 파일을 불러오는 용도로 가장 많이 사용한다.

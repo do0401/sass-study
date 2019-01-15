@@ -1,0 +1,24 @@
+.select1 {
+  padding: 30px; }
+  .select1 .another {
+    margin: 20px; }
+
+#main {
+  border: 10px solid red;
+  /* 3 */
+  background-color: #fff;
+  width: 100%; }
+
+#sidebar {
+  width: 500px;
+  /* 7 */ }
+
+#content {
+  width: 300px;
+  /* 8 */ }
+
+#sidebar2 {
+  width: 10%; }
+
+p.foo {
+  border-color: blue; }

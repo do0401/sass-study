@@ -1,0 +1,32 @@
+.select1 {
+    padding: 30px;
+    .another {
+        margin: 20px;
+    }
+}
+
+$main-width: 100%;                  // 전역변수
+#main {
+    $width: 10px !global;           // 전역변수
+    border: $width solid red;     /* 3 */
+    $main_color: #fff;
+    background-color: $main-color;
+    width: $main-width;
+}
+#sidebar {
+    width: $width*50;               /* 7 */
+}
+#content {
+    $width: 300px;
+    width: $width;                  /* 8 */
+}
+#sidebar2 {
+    width: ($main_width/10);        // Sass 에서는 하이픈(-)과 언더바(_)를 동일한 기호로 인식한다.
+}
+
+$name: foo;
+$attr: border;
+
+p.#{$name} {
+    #{$attr}-color: blue;
+}
