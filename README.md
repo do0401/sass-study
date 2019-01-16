@@ -496,3 +496,387 @@ $new_content2: "Second time reference";
 ```
 - 위와 같이 사용하는 경우, 중첩 구문에만 사용 가능하며, @mixin이나 if 구문에서는 사용할 수 없다.
 - 하지만 @import는 외부 파일을 불러오는 용도로 가장 많이 사용한다.
+
+## `3일차`
+*@media*
+- @media는 반응형(Responsive) 웹사이트 제작에 많이 사용된다.
+
+```scss
+.sidebar {
+    width: 300px;
+    @media screen and (orientation: landscape) {
+        width: 500px;
+    }
+}
+
+// 결과는
+.sidebar {
+    width: 300px;
+}
+@media screen and (orientation: landscape) {
+    .sidebar {
+        width: 500px;
+    }
+}
+```
+- 변수와 삽입을 이용하면 아래와 같은 처리도 가능하다.
+
+```scss
+$media: screen;
+$feature: landscape;
+$value: 500px;
+.sidebar {
+    width: $value;
+    @media #{$media} {
+        @media (orientation: $feature) {
+            width: $value + 200;
+        }
+    }
+}
+
+// 결과는
+.sidebar {
+    width: 500px;
+}
+@media screen and (orientation: landscape) {
+    .sidebar {
+        width: 700px;
+    }
+}
+```
+- Sass의 변수는 구현할 때 조금만 신경쓰면, 매우 다양하게 사용 가능하다.
+
+*@extend(확장)*
+- @extend는 기존에 설정되어 있는 속성을 재사용하면서 다른 선택자의 기능을 확장해준다.
+
+```scss
+body {
+    margin: 0;
+    padding: 0;
+}
+.box1 {
+    height: 300px;
+    text-align: center;
+    padding-top: 50px;
+    color: #fff;
+    background: {
+        image: url("pic1.jpg");
+        repeat: no-repeat;
+        size: cover;
+        position: center;
+    };
+    h1 {
+        font-size: 65px;
+        text-transform: capitalize;
+    };
+    p {
+        width: 800px;
+        margin: 20px auto;
+    };
+}
+.box2 {
+    @extend .box1;
+    padding-top: 70px;
+    h1 {
+        font-size: 45px;
+    };
+    background-image: url("pic2.jpg");
+    p {
+        width: 500px;
+    };
+}
+.box3 {
+    @extend .box2;
+    h1 {
+        font-size: 80px;
+    };
+    background-image: url("pic3.jpg");
+    text-shadow: 2px 2px 5px #000;
+}
+```
+- 이렇게 @extend를 이용하게 되면, 중복되는 속성을 간단하게 확장하여 추가적인 속성을 첨가해서 빠르게 웹사이트를 개발할 수 있다.
+- @extend로 불러온 선택자 내부에 아무런 속성이 없을 경우 에러가 발생한다. 이런 경우 !optional 플래그를 달아주면 에러를 예방할 수 있다.
+
+```scss
+.select1 {
+    @extend .select2 !optional;
+}
+```
+- @extend를 사용할 때 주의할 사항은 @extend는 @media 내부에서는 사용할 수 없다는 점이다.
+
+*@at-root*
+- 중첩을 사용하다가 특정 선택자를 하위 선택자가 아닌 독립적 선택자로 끌어 올려야 하는 경우, @at-root를 사용한다.
+
+```scss
+.select1 {
+    padding-top: 10px;
+    .select2 {
+        margin: 10px;
+    }
+}
+.sel1 {
+    padding-top: 10px;
+    @at-root .sel2 {
+        margin: 10px;
+    }
+}
+
+// 결과는
+.select1 {
+    padding-top: 10px;
+}
+.select1 .select2 {
+    margin: 10px;
+}
+.sel1 {
+    padding-top: 10px;
+}
+.sel2 {
+    margin: 10px;
+}
+```
+- 보시다시피 @at-root를 적용한 선택자는 컴파일 후 부모 선택자의 하위 선택자로 적용되지 않는다.
+- 또한 @at-root 적용 시 with/without 규칙을 사용하면 더 유용하게 사용할 수 있다.
+
+```scss
+@media print {
+    .page {
+        width: 800px;
+        @at-root (without: media) {
+            color: red;
+        }
+    }
+}
+
+// 결과는
+@media print {
+    .page {
+        width: 800px;
+    }
+}
+.page {
+    color: red;
+}
+```
+- 위와 같이 반응형 웹사이트 개발 시 편리하게 사용할 수 있다.
+
+#### 2.9 제어문 및 표현식(Control Directives & Expressions)
+- SassScript 에서는 프로그래밍 언어와 같이 제어문을 이용할 수 있다.
+
+*if(...)*
+```scss
+.firstClass {
+    $color: if(true, blue, red);    // true 이므로 blue 이다.
+    color: $color;
+}
+.secondClass {
+    $color: if(false, blue, red);   // false 이므로 red 이다.
+    color: $color;
+}
+
+// 결과는
+.firstClass {
+    color: blue;
+}
+.secondClass {
+    color: red;
+}
+```
+*@if*
+- if(...)가 참과 거짓에 대한 명제에 사용한다면, @if는 참에 대한 값에만 결과값을 준다.
+
+```scss
+$weight: bold;
+.txt1 {
+    @if $weight == bold {font-weight: bold;}
+    @else if $weight == light {font-weight: 100;}
+    @else if $weight == heavy {font-weight: 900;}
+    @else {font-weight: normal;}
+}
+
+// 결과는
+.txt1 {
+    font-weight: bold;
+}
+```
+- 위와 같이 @if는 @else if와 결합되어 보다 정교한 조건문을 만들어 낼 수 있다.
+- @if는 나중에 배울 mixin과 결합하면 더욱 편리하고 유용하게 사용할 수 있다.
+
+*@for*
+- @for를 이용하면 반복적인 구문을 쉽게 처리할 수 있다.
+
+`@for $var from <start> through <end>`
+- <start>와 <end>에는 숫자가 들어가며, $var에는 어떤 변수명도 가능하다.
+
+```scss
+@for $i from 1 through 5 {
+    .col-#{$i} {
+        width: (100/5*$i)+em;
+    }
+}
+
+// 결과는
+.col-1 {width: 20em;}
+.col-2 {width: 40em:}
+.col-3 {width: 60em:}
+.col-4 {width: 80em:}
+.col-5 {width: 100em:}
+```
+
+*@each*
+- @each는 여러 개의 값을 변수에 각각 대입한다.
+
+`@each $var in 변수값1, 변수값2, 변수값3,...`
+
+```scss
+@each $usr in bob, john, bill {
+    .#{$usr}-icon {
+        background-image: url('/img/#{$usr}.png');
+    }
+}
+
+// 결과는
+.bob-icon {
+    background-image: url("/img/bob.png");
+}
+.john-icon {
+    background-image: url("/img/john.png");
+}
+.bill-icon {
+    background-image: url("/img/bill.png");
+}
+```
+- 위 코드를 map 속성을 이용해 변경하면
+
+```scss
+$ppl: (usr1:bob, usr2:john, usr3:bill);
+@each $key, $usr in $ppl {
+    .#{$usr}-icon {
+        background-image: url('/img/#{$usr}.png');
+    }
+}
+```
+- @each는 한 개 이상의 변수값을 지정해 줄 수도 있다.
+
+```scss
+@each $usr, $color, $value in (usr1, black, 1), (usr2, red, 2), (usr3, blue, 3) {
+    .#{$usr}-icon {
+        background-image: url('/img/#{$usr}.png');
+        border: $value+px solid $color;
+    }
+}
+
+// 결과는
+.usr1-icon {
+    background-image: url("/img/usr1.png");
+    border: 1px solid black;
+}
+.usr2-icon {
+    background-image: url("/img/usr2.png");
+    border: 2px solid red;
+}
+.usr3-icon {
+    background-image: url("/img/usr3.png");
+    border: 3px solid blue;
+}
+```
+- 위 코드 또한 map을 이용하여 처리가 가능하다.
+
+```scss
+$usr1: usr1, black, 1;
+$usr2: usr2, red, 2;
+$usr3: usr3, blue, 3;
+@each $usr, $color, $value in $usr1, $usr2, $usr3 {
+    .#{$usr}-icon {
+        background-image: url('/img/#{$usr}.png');
+        border: $value+px solid $color;
+    }
+}
+```
+
+*@while*
+- @while은 어떠한 조건을 충족할 때까지 값을 반복한다.
+
+```scss
+$i: 1;
+@while $i < 5 {
+    .col-sm-#{$i} {
+        width: 50*$i +px
+    }
+    $i: $i + 1;
+}
+
+// 결과는
+.col-sm-1 {
+    width: 50px;
+}
+.col-sm-2 {
+    width: 100px;
+}
+.col-sm-3 {
+    width: 150px;
+}
+.col-sm-4 {
+    width: 200px;
+}
+```
+- @while문은 값의 증감에 따라 다양한 값을 간단한 코드를 통해 많은 경우의 수를 만들 수 있어 편리하게 사용 가능하다.
+
+#### 2.10 Mixin(매우 중요)
+- mixin은 Sass에서 가장 쓰임새가 많으며, css에서 반복적인 작업을 획기적으로 줄여줄 수 있다.
+- @mixin을 이용하여 정의하고, @include를 이용하여 호출한다.
+
+```scss
+@mixin boldtext {
+    font: {
+        family: 'Malgun Gothic', sans-serif;
+        weight: bold;
+        size: 42px;
+    }
+    color: red;
+}
+.boxsample {
+    @include boldtext;
+}
+
+// 결과는
+.boxsample {
+    font-family: 'Malgun Gothic', sans-serif;
+    font-weight: bold;
+    font-size: 42px;
+    color: red;
+}
+```
+- 위는 기본적인 mixin 사용법이며, 여기에 변수를 사용하면 더욱 편리해진다.
+
+```scss
+@mixin boldtext($size, $color) {
+    font: {
+        family: 'Malgun Gothic', sans-serif;
+        weight: bold;
+        size: $size;
+    }
+    color: $color;
+}
+.boxsample3 {
+    @include boldtext(24px, #000);
+}
+.boxsample5 {
+    @include boldtext($color: red, $size: 36px);
+}
+
+// 결과는
+.boxsample3 {
+    font-family: 'Malgun Gothic', sans-serif;
+    font-weight: bold;
+    font-size: 24px;
+    color: #000;
+}
+.boxsample5 {
+    font-family: 'Malgun Gothic', sans-serif;
+    font-weight: bold;
+    font-size: 36px;
+    color: red;
+}
+```
+- 기본적으로 @include 시 변수값의 위치를 변경하면 안되지만, .boxsample5와 같이 변수명과 값을 같이 써주면 가능하다.

@@ -30,3 +30,47 @@ $attr: border;
 p.#{$name} {
     #{$attr}-color: blue;
 }
+
+body {
+    margin: 0;
+    padding: 0;
+}
+.box1 {
+    height: 300px;
+    text-align: center;
+    padding-top: 50px;
+    color: #fff;
+    background: {
+        image: url("pic1.jpg");
+        repeat: no-repeat;
+        size: cover;
+        position: center;
+    };
+    h1 {
+        font-size: 65px;
+        text-transform: capitalize;
+    };
+    p {
+        width: 800px;
+        margin: 20px auto;
+    };
+}
+.box2 {
+    @extend .box1;
+    padding-top: 70px;
+    h1 {
+        font-size: 45px;
+    };
+    background-image: url("pic2.jpg");
+    p {
+        width: 500px;
+    };
+}
+.box3 {
+    @extend .box2;
+    h1 {
+        font-size: 80px;
+    };
+    background-image: url("pic3.jpg");
+    text-shadow: 2px 2px 5px #000;
+}
