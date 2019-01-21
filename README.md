@@ -880,3 +880,115 @@ $i: 1;
 }
 ```
 - 기본적으로 @include 시 변수값의 위치를 변경하면 안되지만, .boxsample5와 같이 변수명과 값을 같이 써주면 가능하다.
+
+## `4일차`
+- mixin을 가장 편리하게 사용하는 방법 중 하나는 1장에서 언급했던 브라우저 별 속성(vendor prefix)을 정의하는 것이다.
+
+```scss
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+.box {
+    @include border-radius(10px);
+}
+```
+- 변수를 이용해서 값을 처리할 경우 변수의 값이 하나가 아니라 여러 개로 구성된 속성은 변수명 뒤에 점 세개(...)를 추가하면 된다.
+
+```scss
+@mixin box-shadow($shadow...) {
+    -moz-box-shadow: $shadows;
+    -webkit-box-shadow: $shadows;
+    box-shadow: $shadows;
+}
+
+.shadows {
+    @include box-shadow(0px 4px 5px #666, 2px 6px 10px #999);
+}
+```
+- (...)은 아래와 같은 방법으로도 사용 가능하다.
+
+```scss
+@mixin colors($text, $background, $border) {
+    color: $text;
+    background-color: $background;
+    border-color: $border;
+}
+$values: #ff0000, #00ff000, #0000ff;
+.primary {
+    @include colors($values...);
+}
+
+$value-map: (text: #00ff00, background: #000ff, border: #ff0000);
+.secondary {
+    @include colors($value-map...);
+}
+
+// 결과는
+.primary {
+    color: #ff0000;
+    background-color: #00ff00;
+    border-color: #0000ff;
+}
+.secondary {
+    color: #00ff00;
+    background-color: #0000ff;
+    border-color: #ff0000;
+}
+```
+- @content를 사용하면 @include 했을 때, 그 선택자 내부의 내용들이 @content 부분에 나타나게 된다.
+
+```scss
+@mixin boldtext($size, $color) {
+    font: {
+        family: 'Malgun Gothic', sans-serif;
+        weight: bold;
+        size: $size;
+    }
+    color: $color;
+    @content;
+}
+
+.boxsample {
+    @include boldtext(12px, red);
+    border: 1px solid blue;
+    padding: 200px;
+}
+```
+- mixin 은 조건문과 같이 활용하면 더욱 편리하다.
+
+```scss
+@mixin test($condition) {
+    $color: if($condition, blue, red);
+    color: $color;
+}
+.firstClass {
+    @include test(true);
+}
+.secondClass {
+    @include test(false);
+}
+
+// 결과는
+.firstClass {
+    color: blue;
+}
+.secondClass {
+    color: red;
+}
+```
+
+### 3장. SASS 프레임워크: 컴퍼스(Compass)
+- Sass에는 두 개의 프레임워크가 있으며, 그것은 "CSS authoring framework for Sass"라고 불리는 컴퍼스와 "SASS를 위한 SASS"라는 버본이다.
+
+#### 3.1 컴퍼스 설치
+- 컴퍼스는 루비로 설치한다.
+
+`gem install compass`
+- compass 를 설치한다.
+
+#### 3.2 컴퍼스 기초
+- 컴퍼스의 구문은 변수, Mixins, 함수로 구성되어 있으며, mixin을 가장 많이 사용한다.
