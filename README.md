@@ -990,5 +990,86 @@ $value-map: (text: #00ff00, background: #000ff, border: #ff0000);
 `gem install compass`
 - compass 를 설치한다.
 
+## `5일차`
 #### 3.2 컴퍼스 기초
 - 컴퍼스의 구문은 변수, Mixins, 함수로 구성되어 있으며, mixin을 가장 많이 사용한다.
+
+`@import "compass"`
+- 컴파스가 작동하기 위해서는 scss 또는 sass 문서에 compass를 import 해야 한다.
+
+- 그리고 컴파스는 아래와 같은 세 종류의 import를 지원한다.
+
+```txt
+1. @import "compass/css3"
+   : CSS3에 특화된 스타일과 벤더 프리픽스를 자동으로 생성하게 해주는 믹스인들
+2. @import "compass/typography"
+   : 기본적인 글씨체 및 구문과 관련한 스타일을 꾸며주는 믹스인들
+3. @import "compass/utilities"
+   : 기본적이 스타일을 구미기 위한 믹스인들
+```
+
+`compass create <project_name>`
+- 컴퍼스의 CSS3 속성에 대한 예제를 알아보기 전에 먼저 컴퍼스를 사용하기 위한 프로젝트 폴더를 생성한다.
+- 프로젝트를 생성하면 해당 프로젝트 폴더 하위에 몇 가지 폴더와 파일이 생성된다.
+- 그 중 config.rb 파일은 컴퍼스의 디렉토리를 지정해 주는 역할을 하며, 이 파일이 없으면 컴퍼스가 컴파일되지 않는다.
+- config.rb 파일을 확인하면 아래와 같다.
+
+```rb
+# config.rb
+require 'compass/import-once/activate'
+# Require any additional compass plugins here.
+
+# Set this to the root of your project when deployed:
+http_path = "/"                     # '/'(root)를 지정한다.
+css_dir = "stylesheets"             # css 파일이 위치하는 폴더를 지정한다.
+sass_dir = "sass"                   # sass 파일이 위치하는 폴더를 지정한다.
+images_dir = "images"               # 이미지 파일이 위치하는 폴더를 지정한다.
+javascripts_dir = "javascripts"     # javascript 파일이 위치하는 폴더를 지정한다.
+
+# You can select your preferred output style here (can be overridden via the command line):
+# output_style = :expanded or :nested or :compact or :compressed
+
+# To enable relative paths to assets via compass helper functions. Uncomment:
+relative_assets = true      # assets(웹사이트를 구성하는 파일들)의 경로를 실제 경로로 지정해 주는 역할을 한다.
+
+# To disable debugging comments that display the original location of your selectors. Uncomment:
+# line_comments = false
+
+
+# If you prefer the indented syntax, you might want to regenerate this
+# project again passing --syntax sass, or you can uncomment this:
+preferred_syntax = :scss    # 컴퍼스의 구문이 scss 라는 것을 설정한다.
+# and then run:
+# sass-convert -R --from scss --to sass sass scss && rm -rf sass && mv scss sass
+```
+   > 더 많은 옵션 참조 : [Ruby-based Configuration Reference](http://compass-style.org/help/documentation/configuration-reference/)
+- 기본적인 설정은 자동으로 작성되어 있으며, 우리는 여기에 relative_assets = true 와 preferred_syntax = :scss 설정만 추가로 지정한다.
+- sass 폴더 안에 sample.scss 파일을 생성한다.
+
+```scss
+// sample.scss
+@import "complass/reset";
+@import "compass/css3";
+```
+- 위와 같이 입력 후 저장해도 아직 stylesheets 폴더에는 sample.css 파일이 없다.
+- 컴파일을 해야 한다. compass 프로젝트 폴더로 이동한다.
+
+`compass watch`
+- 프로젝트 폴더에 변경 사항이 있을 때마다 컴파일을 진행하여 최신 상태로 유지한다.
+
+`compass compile --production`
+- 출력을 최적화하여 production 용도로 컴파일을 진행한다.
+
+- 우리는 compass watch 를 사용하자. compass watch 를 실행하면 stylesheets 폴더에 파일이 생성되는 것을 확인할 수 있다.
+
+---
+**Compass Compile 주의사항**
+1. Compass 프로젝트 경로에 한글로 된 폴더가 있으면 compatibilityError 가 발생한다.
+   > [compatibilityError 참조](https://grace-go.tistory.com/56)
+
+2. Sass cache 에러가 발생하는 경우 config.rb 파일에 다음 내용을 추가한다.
+    ```rb
+    cache_path = 'c:\temp\sass'
+    ```
+   > [Sass cache 에러 참조](https://www.andraeraymond.com/2017/01/compass-file-not-found-error-in-sass-cache/)
+---
